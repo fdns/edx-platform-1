@@ -5,6 +5,8 @@ Bok choy acceptance tests for problems in the LMS
 See also old lettuce tests in lms/djangoapps/courseware/features/problems.feature
 """
 from textwrap import dedent
+import time
+import ddt
 
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
@@ -933,3 +935,165 @@ class ProblemMetaUngradedTest(ProblemsTest):
         problem_page = ProblemPage(self.browser)
         self.assertEqual(problem_page.problem_name, 'TEST PROBLEM')
         self.assertEqual(problem_page.problem_progress_graded_value, "1 point possible (ungraded)")
+
+
+class FormulaProblemTest(ProblemsTest):
+    """
+    Test Class to verify the formula problem on LMS
+    """
+    def setUp(self):
+        super(FormulaProblemTest, self).setUp()
+        self.courseware_page.visit()
+        # wait to allow most MathJax files to load
+        time.sleep(4)
+
+    def get_problem(self):
+        """
+        Problem structure
+        """
+        xml = dedent("""
+                    <problem>
+    <formularesponse type="ci" samples="R_1,R_2,R_3@1,2,3:3,4,5#10" answer="R_1*R_2/R_3">
+        <p>You can use this template as a guide to the OLX markup to use for math expression problems. Edit this component to replace the example with your own assessment.</p>
+        <label>Add the question text, or prompt, here. This text is required. Example: Write an expression for the product of R_1, R_2, and the inverse of R_3.</label>
+        <description>You can add an optional tip or note related to the prompt like this. Example: To test this example, the correct answer is R_1*R_2/R_3</description>
+        <responseparam type="tolerance" default="0.00001"/>
+        <formulaequationinput size="40"/>
+    </formularesponse>
+                    </problem>
+                """)
+        return XBlockFixtureDesc('problem', 'TEST PROBLEM', data=xml, metadata={'show_reset_button': True})
+
+    def test_reset_problem_after_incorrect_submission(self):
+        """
+        Test reset button works after incorrect submission
+        """
+        problem_page = ProblemPage(self.browser)
+        problem_page.fill_answer_numerical('R_1*R_2')
+        problem_page.verify_mathjax_rendered_in_preview()
+        problem_page.click_submit()
+        self.assertFalse(problem_page.simpleprob_is_correct())
+        self.assertTrue(problem_page.is_reset_button_present())
+        problem_page.click_reset()
+        self.assertEqual(problem_page.get_numerical_input_value, '')
+
+    def test_reset_button_not_rendered_after_correct_submission(self):
+        """
+        Test reset button is not rendered after the correct submission
+        """
+        problem_page = ProblemPage(self.browser)
+        problem_page.fill_answer_numerical('R_1*R_2/R_3')
+        problem_page.verify_mathjax_rendered_in_preview()
+        problem_page.click_submit()
+        self.assertTrue(problem_page.simpleprob_is_correct())
+        self.assertFalse(problem_page.is_reset_button_present())
+
+    def test_reset_problem_after_changing_correctness(self):
+        """
+        Test reset possible after changing correctness to incorrectness
+        """
+        problem_page = ProblemPage(self.browser)
+        problem_page.fill_answer_numerical('R_1*R_2/R_3')
+        problem_page.verify_mathjax_rendered_in_preview()
+        problem_page.click_submit()
+        self.assertTrue(problem_page.simpleprob_is_correct())
+        self.assertFalse(problem_page.is_reset_button_present())
+        problem_page.fill_answer_numerical('R_1/R_3')
+        problem_page.click_submit()
+        self.assertFalse(problem_page.simpleprob_is_correct())
+        self.assertTrue(problem_page.is_reset_button_present())
+        problem_page.click_reset()
+        self.assertEqual(problem_page.get_numerical_input_value, '')
+
+
+@ddt.ddt
+class FormulaProblemRandomizeTest(ProblemsTest):
+    """
+    Test Class to verify the formula problem on LMS with Randomization enabled
+    """
+
+    def setUp(self):
+        super(FormulaProblemRandomizeTest, self).setUp()
+        self.courseware_page.visit()
+        # wait to allow most MathJax files to load
+        time.sleep(4)
+
+    def get_problem(self):
+        """
+        creating the formula response problem
+        """
+        xml = dedent("""
+                    <problem>
+    <formularesponse type="ci" samples="R_1,R_2,R_3@1,2,3:3,4,5#10" answer="R_1*R_2/R_3">
+        <p>You can use this template as a guide to the OLX markup to use for math expression problems. Edit this component to replace the example with your own assessment.</p>
+        <label>Add the question text, or prompt, here. This text is required. Example: Write an expression for the product of R_1, R_2, and the inverse of R_3.</label>
+        <description>You can add an optional tip or note related to the prompt like this. Example: To test this example, the correct answer is R_1*R_2/R_3</description>
+        <responseparam type="tolerance" default="0.00001"/>
+        <formulaequationinput size="40"/>
+    </formularesponse>
+                    </problem>
+                """)
+
+        # rerandomize:always will show reset button, no matter the submission correctness
+        return XBlockFixtureDesc(
+            'problem', 'TEST PROBLEM', data=xml, metadata={'show_reset_button': True, 'rerandomize': 'always'}
+        )
+
+    @ddt.data(
+        ('R_1*R_2', 'incorrect'),
+        ('R_1/R_3', 'incorrect'),
+        ('R_1*R_2/R_3', 'correct')
+    )
+    @ddt.unpack
+    def test_reset_problem_after_submission(self, input_value, correctness):
+        """
+        Test reset button works after the submission
+        """
+        problem_page = ProblemPage(self.browser)
+        problem_page.fill_answer_numerical(input_value)
+        problem_page.verify_mathjax_rendered_in_preview()
+        problem_page.click_submit()
+        self.assertEqual(problem_page.get_simpleprob_correctness(), correctness)
+        self.assertTrue(problem_page.is_reset_button_present())
+        problem_page.click_reset()
+        self.assertEqual(problem_page.get_numerical_input_value, '')
+
+    @ddt.data(
+        ('R_1*R_2', 'incorrect', '0/1 point (ungraded)', '0/1 point (ungraded)'),
+        ('R_1*R_2/R_3', 'correct', '1/1 point (ungraded)', '0/1 point (ungraded)'),
+        ('R_1/R_2', 'incorrect', '0/1 point (ungraded)', '0/1 point (ungraded)')
+    )
+    @ddt.unpack
+    def test_score_reset_after_resetting_problem(self, input_value, correctness, score_before_reset, score_after_reset):
+        """
+        Test score is reset after resetting the formula problem
+        """
+        problem_page = ProblemPage(self.browser)
+        problem_page.fill_answer_numerical(input_value)
+        problem_page.verify_mathjax_rendered_in_preview()
+        problem_page.click_submit()
+        self.assertEqual(problem_page.get_simpleprob_correctness(), correctness)
+        self.assertIn(score_before_reset, problem_page.problem_progress_graded_value)
+        self.assertTrue(problem_page.is_reset_button_present())
+        problem_page.click_reset()
+        self.assertIn(score_after_reset, problem_page.problem_progress_graded_value)
+
+    @ddt.data(
+        ('R_1*R_2', 'incorrect', 'R_1*R_2/R_3'),
+        ('R_1*R_2/R_3', 'correct', 'R_1/R_3')
+    )
+    @ddt.unpack
+    def test_reset_correctness_after_changing_answer(self, input_value, correctness, next_input):
+        """
+        Test correctness can be reset by only changing input,and not resubmitting, after initial submission.
+        """
+        problem_page = ProblemPage(self.browser)
+        problem_page.fill_answer_numerical(input_value)
+        problem_page.verify_mathjax_rendered_in_preview()
+        problem_page.click_submit()
+        self.assertEqual(problem_page.get_simpleprob_correctness(), correctness)
+        problem_page.fill_answer_numerical(next_input)
+        self.assertIsNone(problem_page.get_simpleprob_correctness())
+        self.assertTrue(problem_page.is_reset_button_present())
+        problem_page.click_reset()
+        self.assertEqual(problem_page.get_numerical_input_value, '')
