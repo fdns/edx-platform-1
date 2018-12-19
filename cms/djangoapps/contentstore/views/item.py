@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
 from opaque_keys.edx.keys import CourseKey
@@ -69,6 +70,7 @@ from xmodule.modulestore.inheritance import own_metadata
 from xmodule.services import ConfigurationService, SettingsService
 from xmodule.tabs import CourseTabList
 from xmodule.x_module import DEPRECATION_VSCOMPAT_EVENT, PREVIEW_VIEWS, STUDENT_VIEW, STUDIO_VIEW
+from edx_proctoring.api import get_exam_by_content_id
 
 __all__ = [
     'orphan_handler', 'xblock_handler', 'xblock_view_handler', 'xblock_outline_handler', 'xblock_container_handler'
@@ -1231,6 +1233,18 @@ def create_xblock_info(xblock, data=None, metadata=None, include_ancestor_info=F
                 })
             elif xblock.category == 'sequential':
                 rules_url = settings.PROCTORING_SETTINGS.get('LINK_URLS', {}).get('online_proctoring_rules', "")
+
+                proctoring_provider = None
+                proctoring_exam_configuration_link = None
+                if xblock.is_proctored_exam:
+                    exam = get_exam_by_content_id(course.id, xblock_info['id'])
+                    proctoring_provider = exam['backend']
+                    if proctoring_provider == 'proctortrack':
+                        exam_id = exam['id']
+                        proctoring_exam_configuration_link = reverse(
+                            'edx_proctoring:instructor_dashboard_exam', args=(course.id, exam_id)
+                        )
+
                 xblock_info.update({
                     'is_proctored_exam': xblock.is_proctored_exam,
                     'online_proctoring_rules': rules_url,
@@ -1238,6 +1252,8 @@ def create_xblock_info(xblock, data=None, metadata=None, include_ancestor_info=F
                     'is_time_limited': xblock.is_time_limited,
                     'exam_review_rules': xblock.exam_review_rules,
                     'default_time_limit_minutes': xblock.default_time_limit_minutes,
+                    'proctoring_provider': proctoring_provider,
+                    'proctoring_exam_configuration_link': proctoring_exam_configuration_link,
                 })
 
         # Update with gating info

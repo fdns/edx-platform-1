@@ -2786,7 +2786,8 @@ class TestXBlockInfo(ItemTest):
             self.assertIsNone(xblock_info.get('child_info', None))
 
     @patch.dict('django.conf.settings.FEATURES', {'ENABLE_SPECIAL_EXAMS': True})
-    def test_proctored_exam_xblock_info(self):
+    @patch('contentstore.views.item.get_exam_by_content_id')
+    def test_proctored_exam_xblock_info(self, get_exam_by_content_id_patch):
         self.course.enable_proctored_exams = True
         self.course.save()
         self.store.update_item(self.course, self.user.id)
@@ -2807,6 +2808,13 @@ class TestXBlockInfo(ItemTest):
             default_time_limit_minutes=100
         )
         sequential = modulestore().get_item(sequential.location)
+
+        test_backend = 'software_secure'
+        get_exam_by_content_id_patch.return_value = {
+            'backend': test_backend,
+            'id': 1,
+        }
+
         xblock_info = create_xblock_info(
             sequential,
             include_child_info=True,
@@ -2816,6 +2824,30 @@ class TestXBlockInfo(ItemTest):
         self.assertEqual(xblock_info['is_proctored_exam'], True)
         self.assertEqual(xblock_info['is_time_limited'], True)
         self.assertEqual(xblock_info['default_time_limit_minutes'], 100)
+        self.assertEqual(xblock_info['proctoring_provider'], test_backend)
+        self.assertEqual(xblock_info['proctoring_exam_configuration_link'], None)
+
+        test_backend = 'proctortrack'
+        get_exam_by_content_id_patch.return_value = {
+            'backend': test_backend,
+            'id': 1,
+        }
+
+        xblock_info = create_xblock_info(
+            sequential,
+            include_child_info=True,
+            include_children_predicate=ALWAYS,
+        )
+
+        self.assertEqual(xblock_info['is_proctored_exam'], True)
+        self.assertEqual(xblock_info['is_time_limited'], True)
+        self.assertEqual(xblock_info['default_time_limit_minutes'], 100)
+        self.assertEqual(xblock_info['proctoring_provider'], test_backend)
+        self.assertEqual(
+                        xblock_info['proctoring_exam_configuration_link'],
+                        reverse(
+                            'edx_proctoring:instructor_dashboard_exam', args=(course.id, 1)
+                        ))
 
 
 class TestLibraryXBlockInfo(ModuleStoreTestCase):
