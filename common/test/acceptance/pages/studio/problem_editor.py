@@ -28,6 +28,15 @@ class ProblemXBlockEditorView(XBlockEditorView):
         script = "$(arguments[0]).val(arguments[1]).change();"
         self.browser.execute_script(script, selector, field_value)
 
+    def get_field_val(self, field_display_name):
+        """
+        If editing, get the value of field
+        Returns:
+            (string): Value of the field
+        """
+        script = "return $('.wrapper-comp-setting label:contains({}) + input').val();".format(field_display_name)
+        return self.browser.execute_script(script)
+
     def get_default_dropdown_value(self, css):
         """
         Gets default value from the dropdown
@@ -40,6 +49,31 @@ class ProblemXBlockEditorView(XBlockEditorView):
         dropdown_default_selection = Select(element)
         value = dropdown_default_selection.first_selected_option.text
         return value
+
+    def select_from_dropdown(self, dropdown_name, value):
+        """
+        Selects from the dropdown
+        Arguments:
+            dropdown_name(string): Name of the dropdown to be opened
+            value(string): Value to be selected
+        """
+        self.q(css='select[class="input setting-input"][name="{}"]'.format(dropdown_name)).first.click()
+        self.wait_for_element_visibility('option[value="{}"]'.format(value), 'Dropdown is visible')
+        self.q(css='option[value="{}"]'.format(value)).click()
+
+    def get_value_from_the_dropdown(self, dropdown_name):
+        """
+        Get selected value from the dropdown
+        Args:
+            dropdown_name(string): Name of the dropdown
+        Returns:
+            (string): Selected Value from the dropdown
+
+        """
+        dropdown = self.browser.find_element_by_css_selector(
+            'select[class="input setting-input"][name="{}"]'.format(dropdown_name)
+        )
+        return Select(dropdown).first_selected_option.text
 
     def get_settings(self):
         """
@@ -60,6 +94,21 @@ class ProblemXBlockEditorView(XBlockEditorView):
             settings_dict[key] = value
 
         return settings_dict
+
+    def toggle_cheatsheet(self):
+        """
+        Toggle cheatsheet on toolbar
+        """
+        self.q(css='.cheatsheet-toggle').first.click()
+        self.wait_for_element_visibility('.simple-editor-cheatsheet.shown', 'Cheatsheet is visible')
+
+    def is_cheatsheet_present(self):
+        """
+        Check for cheatsheet presence
+        Returns:
+            bool: True if present
+        """
+        return self.q(css='.simple-editor-cheatsheet.shown').present
 
     def is_latex_compiler_present(self):
         """
