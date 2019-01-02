@@ -729,6 +729,8 @@ class CourseFields(object):
     catalog_visibility = String(
         display_name=_("Course Visibility In Catalog"),
         help=_(
+            # Translators: the quoted words 'both', 'about', and 'none' are also
+            # separate strings that have to be translated the same as here.
             "Defines the access permissions for showing the course in the course catalog. This can be set to one "
             "of three values: 'both' (show in catalog and allow access to about page), 'about' (only allow access "
             "to about page), 'none' (do not show in catalog and do not allow access to an about page)."
@@ -736,9 +738,18 @@ class CourseFields(object):
         default=DEFAULT_COURSE_VISIBILITY_IN_CATALOG,
         scope=Scope.settings,
         values=[
+            # Translators: this word also appears in the string "Defines the access permissions for
+            # showing the course..." and should be translated here the same as there.
             {"display_name": _("Both"), "value": CATALOG_VISIBILITY_CATALOG_AND_ABOUT},
+
+            # Translators: this word also appears in the string "Defines the access permissions for
+            # showing the course..." and should be translated here the same as there.
             {"display_name": _("About"), "value": CATALOG_VISIBILITY_ABOUT},
-            {"display_name": _("None"), "value": CATALOG_VISIBILITY_NONE}]
+
+            # Translators: this word also appears in the string "Defines the access permissions for
+            # showing the course..." and should be translated here the same as there.
+            {"display_name": _("None"), "value": CATALOG_VISIBILITY_NONE},
+        ],
     )
 
     entrance_exam_enabled = Boolean(
@@ -919,6 +930,8 @@ class CourseFields(object):
     course_visibility = String(
         display_name=_("Course Visibility For Unenrolled Learners"),
         help=_(
+            # Translators: the quoted words 'private', 'public_outline', and 'public'
+            # are also separate strings that have to be translated the same as here.
             "Defines the access permissions for unenrolled learners. This can be set to one of three values: "
             "'private' (default visibility, only allowed for enrolled students), 'public_outline' "
             "(allow access to course outline) and 'public' (allow access to both outline and course content)."
@@ -926,9 +939,18 @@ class CourseFields(object):
         default=COURSE_VISIBILITY_PRIVATE,
         scope=Scope.settings,
         values=[
+            # Translators: this word also appears in the string "Defines the access permissions for
+            # unenrolled learners..." and should be translated here the same as there.
             {"display_name": _("private"), "value": COURSE_VISIBILITY_PRIVATE},
+
+            # Translators: this word also appears in the string "Defines the access permissions for
+            # unenrolled learners..." and should be translated here the same as there.
             {"display_name": _("public_outline"), "value": COURSE_VISIBILITY_PUBLIC_OUTLINE},
-            {"display_name": _("public"), "value": COURSE_VISIBILITY_PUBLIC}]
+
+            # Translators: this word also appears in the string "Defines the access permissions for
+            # unenrolled learners..." and should be translated here the same as there.
+            {"display_name": _("public"), "value": COURSE_VISIBILITY_PUBLIC},
+        ],
     )
 
     """
