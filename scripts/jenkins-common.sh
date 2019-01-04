@@ -17,6 +17,7 @@ mongo --quiet --eval 'db.getMongo().getDBNames().forEach(function(i){db.getSibli
 # a release branc) Some of the reporting tools compare the checked out
 # branch to a target branch; depending on how the GitHub plugin refspec
 # is configured, this may not already be fetched.
+TARGET_BRANCH=$(echo "${TARGET_BRANCH}" | sed 's:^origin/::')
 if [ ! -z ${TARGET_BRANCH+x} ]; then
     git fetch origin $TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH
 fi
