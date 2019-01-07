@@ -431,6 +431,11 @@
                 if (~focusId.indexOf('beta-language')) {
                     tabIndex = -1;
                     $(focusId).attr({'aria-hidden': false});
+
+                    // Scroll to top of the page
+                    $('html,body').animate({
+                        scrollTop: $('.window-wrap').offset().top
+                    }, 'slow');
                 }
                 $(focusId).attr({tabindex: tabIndex}).focus();
                 // Deleting the cookie
