@@ -106,6 +106,8 @@ from lms.envs.common import (
     # Enterprise service settings
     ENTERPRISE_CATALOG_INTERNAL_ROOT_URL,
 
+    IDA_LOGOUT_URI_LIST,
+
     # Methods to derive settings
     _make_mako_template_dirs,
     _make_locale_paths,
