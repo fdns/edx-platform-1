@@ -288,7 +288,7 @@ class CourseGradeReport(object):
         Returns the applicable grades-related headers for this report.
         """
         graded_assignments = context.graded_assignments
-        grades_header = ["Grade"]
+        grades_header = ["Grade", "Grade Scaled"]
         for assignment_info in graded_assignments.itervalues():
             if assignment_info['separate_subsection_avg_headers']:
                 grades_header.extend(assignment_info['subsection_headers'].itervalues())
@@ -366,7 +366,14 @@ class CourseGradeReport(object):
             if assignment_average is not None:
                 grade_results.append([assignment_average])
 
-        return [course_grade.percent] + _flatten(grade_results)
+        return [course_grade.percent, self.grade_percent_scaled(course_grade, context)] + _flatten(grade_results)
+
+    def grade_percent_scaled(self, course_grade, context):
+        grade_cutoff = min(context.course.grade_cutoffs.values())
+        if course_grade.percent < grade_cutoff:
+            return round(10. * (3. / grade_cutoff * course_grade.percent + 1.)) / 10.
+        return round((3. / (1. - grade_cutoff) * course_grade.percent + (7. - (3. / (1. - grade_cutoff)))) * 10.) / 10.
+
 
     def _user_subsection_grades(self, course_grade, subsection_headers):
         """
