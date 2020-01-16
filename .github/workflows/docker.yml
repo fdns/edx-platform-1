@@ -13,7 +13,7 @@ jobs:
         run: docker pull eoluchile/edx-platform:latest
 
       - name: Build OpenedX
-        run: docker build . --file .github/Dockerfile --tag eoluchile/edx-platform:${GITHUB_SHA} --tag eoluchile/edx-platform:latest
+        run: docker build . --file .github/build/Dockerfile --tag eoluchile/edx-platform:${GITHUB_SHA} --tag eoluchile/edx-platform:latest
 
       - name: Push
         run: |
