@@ -402,7 +402,7 @@ class AccountCreationForm(forms.Form):
             disallowed_patterns = settings.REGISTRATION_EMAIL_PATTERNS_DISALLOWED
             # We append a '$' to the regexs to prevent the common mistake of using a
             # pattern like '.*@edx\\.org' which would match 'bob@edx.org.badguy.com'
-            if any(re.match(pattern + "$", email) for pattern in disallowed_patterns):
+            if any(re.match(pattern + "$", email) for pattern in disallowed_patterns, flags=re.IGNORECASE):
                 # This email is not on the whitelist of allowed emails.
                 raise ValidationError(_("Unauthorized email address."))
         # EOL
