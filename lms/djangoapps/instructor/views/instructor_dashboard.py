@@ -115,7 +115,10 @@ def instructor_dashboard_2(request, course_id):
         'staff': bool(has_access(request.user, 'staff', course)),
         'forum_admin': has_forum_access(request.user, course_key, FORUM_ROLE_ADMINISTRATOR),
     }
-
+    
+    ### EOl - instructor_staff ###
+    access['uchile_instructor_staff'] = request.user.has_perm('uchileedxlogin.uchile_instructor_staff')
+    
     if not access['staff']:
         raise Http404()
 
