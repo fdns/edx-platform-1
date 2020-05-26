@@ -5,7 +5,7 @@ FROM ubuntu:16.04 as base
 # Install system requirements
 RUN apt update && \
     # Global requirements
-    apt install -y language-pack-en git python-virtualenv build-essential software-properties-common curl git-core libxml2-dev libxslt1-dev python-pip libmysqlclient-dev python-apt python-dev libxmlsec1-dev libfreetype6-dev swig gcc g++ \
+    apt install -y language-pack-en git build-essential software-properties-common curl git-core libxml2-dev libxslt1-dev libmysqlclient-dev libxmlsec1-dev libfreetype6-dev swig gcc g++ python3-dev python3-pip \
     # openedx requirements
     gettext gfortran graphviz graphviz-dev libffi-dev libfreetype6-dev libgeos-dev libjpeg8-dev liblapack-dev libpng12-dev libsqlite3-dev libxml2-dev libxmlsec1-dev libxslt1-dev nodejs npm ntp pkg-config lynx \
     # Our requirements
@@ -31,13 +31,14 @@ WORKDIR /openedx/edx-platform
 # Install python requirements (clone source repos in a separate dir, otherwise
 # they will be overwritten when we mount edx-platform)
 ENV NO_PYTHON_UNINSTALL 1
-RUN pip install --src ../venv/src -r requirements/edx/base.txt
+RUN pip3 install pip==20.0.2 \
+  && pip3 install --src ../venv/src -r requirements/edx/base.txt
 
 # Remove the original versions of ora2 and edx-sga
-RUN pip uninstall -y ora2 edx-sga
+RUN pip3 uninstall -y ora2 edx-sga
 
 # Manually update pytz (Timezones)
-RUN pip install pytz --upgrade
+RUN pip3 install pytz --upgrade
 
 # Install a recent version of nodejs
 RUN nodeenv /openedx/nodeenv --node=8.9.3 --prebuilt
@@ -86,5 +87,5 @@ FROM base as testing
 
 # Install testing packages
 RUN grep -v -x -f /openedx/edx-platform/requirements/edx/base.txt /openedx/edx-platform/requirements/edx/development.txt > /tmp/requirements.txt \
-    && pip install -r /tmp/requirements.txt \
+    && pip3 install -r /tmp/requirements.txt \
     && rm /tmp/requirements.txt
