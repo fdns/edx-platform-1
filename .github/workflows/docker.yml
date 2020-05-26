@@ -13,7 +13,7 @@ jobs:
         run: docker pull eoluchile/edx-platform:latest
 
       - name: Build Open edX Base
-        run: docker build . --file .github/build/Dockerfile --target base --tag eoluchile/edx-platform:${GITHUB_SHA} --tag eoluchile/edx-platform:latest
+        run: docker build . --file .github/build/Dockerfile --target base --tag eoluchile/edx-platform:${GITHUB_SHA} --tag eoluchile/edx-platform:juniper
 
       - name: Build Open edX Testing version
         run: docker build . --file .github/build/Dockerfile --target testing --tag eoluchile/edx-platform:testing-jupiter
@@ -33,3 +33,15 @@ jobs:
         env:
           DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Push to juniper
+        if: github.ref == 'refs/heads/eol/juniper.rc3'
+        run: |
+          echo "${DOCKERHUB_PASSWORD}" | docker login --username ${DOCKERHUB_USER} --password-stdin
+          docker push eoluchile/edx-platform:${GITHUB_SHA}
+          docker push eoluchile/edx-platform:juniper
+          docker push eoluchile/edx-platform:testing-jupiter
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+
