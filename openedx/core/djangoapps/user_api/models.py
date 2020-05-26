@@ -31,6 +31,10 @@ from student.models import (
 )
 from util.model_utils import emit_setting_changed_event, get_changed_fields_dict
 
+# EOL
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from django.conf import settings
+# EOL
 
 class RetirementStateError(Exception):
     pass

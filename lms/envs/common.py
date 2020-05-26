@@ -3917,3 +3917,9 @@ GITHUB_REPO_ROOT = '/edx/var/edxapp/data'
 
 ##################### SUPPORT URL ############################
 SUPPORT_HOW_TO_UNENROLL_LINK = ''
+
+############## EOL #########################
+REGISTRATION_EMAIL_PATTERNS_DISALLOWED = None
+
+############## Grade Report - uchileedxlogin #########################
+UCHILEEDXLOGIN_TASK_RUN_ENABLE = False
