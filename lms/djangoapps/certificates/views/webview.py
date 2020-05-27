@@ -150,7 +150,11 @@ def _update_certificate_context(context, course, user_certificate, platform_name
         context['certificate_type_description'] = certificate_type_description
     
     grade_cutoff = min(course.grade_cutoffs.values())  # Get the min value
-    context['eol_grade'] = grade_percent_scaled(float(user_certificate.grade), grade_cutoff)
+    try:
+        grade_percent = float(user_certificate.grade)
+    except ValueError:
+        grade_percent = 0.0
+    context['eol_grade'] = grade_percent_scaled(grade_percent, grade_cutoff)
     
     # Translators: This text describes the purpose (and therefore, value) of a course certificate
     context['certificate_info_description'] = _("{platform_name} acknowledges achievements through "
