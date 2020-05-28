@@ -115,7 +115,7 @@ def instructor_dashboard_2(request, course_id):
         'staff': bool(has_access(request.user, 'staff', course)),
         'forum_admin': has_forum_access(request.user, course_key, FORUM_ROLE_ADMINISTRATOR),
     }
-    
+
     if not access['staff']:
         raise Http404()
 
