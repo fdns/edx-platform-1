@@ -16,7 +16,7 @@ jobs:
         run: docker build . --file .github/build/Dockerfile --target base --tag eoluchile/edx-platform:${GITHUB_SHA} --tag eoluchile/edx-platform:juniper
 
       - name: Build Open edX Testing version
-        run: docker build . --file .github/build/Dockerfile --target testing --tag eoluchile/edx-platform:testing-jupiter
+        run: docker build . --file .github/build/Dockerfile --target testing --tag eoluchile/edx-platform:testing-juniper
 
       - name: Test eol changes
         run: |
@@ -29,7 +29,7 @@ jobs:
           echo "${DOCKERHUB_PASSWORD}" | docker login --username ${DOCKERHUB_USER} --password-stdin
           docker push eoluchile/edx-platform:${GITHUB_SHA}
           docker push eoluchile/edx-platform:latest
-          docker push eoluchile/edx-platform:testing-jupiter
+          docker push eoluchile/edx-platform:testing-juniper
         env:
           DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -40,7 +40,7 @@ jobs:
           echo "${DOCKERHUB_PASSWORD}" | docker login --username ${DOCKERHUB_USER} --password-stdin
           docker push eoluchile/edx-platform:${GITHUB_SHA}
           docker push eoluchile/edx-platform:juniper
-          docker push eoluchile/edx-platform:testing-jupiter
+          docker push eoluchile/edx-platform:testing-juniper
         env:
           DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
