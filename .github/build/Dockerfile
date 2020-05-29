@@ -41,7 +41,7 @@ RUN pip3 uninstall -y ora2 edx-sga
 RUN pip3 install pytz --upgrade
 
 # Install a recent version of nodejs
-RUN nodeenv /openedx/nodeenv --node=12 --prebuilt
+RUN nodeenv /openedx/nodeenv --node=12.13.0 --prebuilt
 ENV PATH /openedx/nodeenv/bin:${PATH}
 
 # Install nodejs requirements
