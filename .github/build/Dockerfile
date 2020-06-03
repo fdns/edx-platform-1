@@ -13,7 +13,7 @@ RUN apt update && \
     mysql-client locales unzip \
     && rm -rf /var/lib/apt/lists/* \
     && ln -s /usr/bin/pip3 /usr/bin/pip \
-    ln -s /usr/bin/python3 /usr/bin/python
+    && ln -s /usr/bin/python3 /usr/bin/python
 
 # Setup system locales, this is used to fix accent in code
 RUN locale-gen en_US.UTF-8
