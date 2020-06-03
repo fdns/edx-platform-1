@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
 
   lms:
-    image: eoluchile/edx-platform:testing-jupiter
+    image: eoluchile/edx-platform:testing-juniper
     depends_on:
       - memcached
       - mongodb
