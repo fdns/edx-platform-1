@@ -1,16 +1,19 @@
 FROM ubuntu:16.04 as base
 
 ############ common to lms & cms
+ARG EDX_PLATFORM_VERSION=undefined
 
 # Install system requirements
 RUN apt update && \
     # Global requirements
-    apt install -y language-pack-en git build-essential software-properties-common curl git-core libxml2-dev libxslt1-dev libmysqlclient-dev libxmlsec1-dev libfreetype6-dev swig gcc g++ python3-dev python3-pip \
+    apt install -y language-pack-en git build-essential software-properties-common curl git-core libxml2-dev libxslt1-dev libmysqlclient-dev libxmlsec1-dev libfreetype6-dev libssl-dev swig gcc g++ \
     # openedx requirements
-    gettext gfortran graphviz graphviz-dev libffi-dev libfreetype6-dev libgeos-dev libjpeg8-dev liblapack-dev libpng12-dev libsqlite3-dev libxml2-dev libxmlsec1-dev libxslt1-dev nodejs npm ntp pkg-config lynx \
+    gettext gfortran graphviz libgraphviz-dev libffi-dev libfreetype6-dev libgeos-dev libjpeg8-dev liblapack-dev libpng-dev libsqlite3-dev libxml2-dev libxmlsec1-dev libxslt1-dev ntp pkg-config python3.5 python3-pip python3-dev lynx \
     # Our requirements
     mysql-client locales unzip \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/bin/pip3 /usr/bin/pip \
+    ln -s /usr/bin/python3 /usr/bin/python
 
 # Setup system locales, this is used to fix accent in code
 RUN locale-gen en_US.UTF-8
@@ -57,8 +60,13 @@ ENV PATH /openedx/bin:${PATH}
 # the settings files.
 COPY .github/build/settings/lms/*.py ./lms/envs/prod/
 COPY .github/build/settings/cms/*.py ./cms/envs/prod/
-RUN mkdir -p /openedx/config ./lms/envs/prod ./cms/envs/prod
+RUN mkdir -p /openedx/config ./lms/envs/prod ./cms/envs/prod \
+  && echo ${EDX_PLATFORM_VERSION} > /openedx/config/revision.yml
+
 ENV CONFIG_ROOT /openedx/config
+ENV LMS_CFG /openedx/config/lms.yml
+ENV CMS_CFG /openedx/config/cms.yml
+ENV REVISION_CFG /openedx/config/revision.yml
 
 # Collect production assets. By default, only assets from the default theme
 # will be processed. This makes the docker image lighter and faster to build.
