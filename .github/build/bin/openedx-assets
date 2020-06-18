@@ -9,8 +9,6 @@ import traceback
 from path import Path
 
 from pavelib import assets
-from xmodule import static_content as xmodule_static_content
-
 
 DEFAULT_STATIC_ROOT = '/openedx/staticfiles'
 DEFAULT_THEMES_DIR = '/openedx/themes'
@@ -72,8 +70,19 @@ def run_build(args):
     run_themes(args)
 
 def run_xmodule(args):
-    sys.argv[1:] = ['common/static/xmodule']
-    xmodule_static_content.main()
+    # Collecting xmodule assets is incompatible with setting the django path, because
+    # of an unfortunate call to settings.configure()
+    django_settings_module = os.environ.get("DJANGO_SETTINGS_MODULE")
+    if django_settings_module:
+        os.environ.pop("DJANGO_SETTINGS_MODULE")
+
+    sys.argv[1:] = ["common/static/xmodule"]
+    import xmodule.static_content
+
+    xmodule.static_content.main()
+
+    if django_settings_module:
+        os.environ["DJANGO_SETTINGS_MODULE"] = django_settings_module
 
 def run_npm(args):
     assets.process_npm_assets()
@@ -85,7 +94,7 @@ def run_webpack(args):
         'prod': 'production',
         'dev': 'development',
     }[args.env]
-    subprocess.call([
+    subprocess.check_call([
         'webpack', '--config=webpack.{env}.config.js'.format(env=args.env)
     ])
 

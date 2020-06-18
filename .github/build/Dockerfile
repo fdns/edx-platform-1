@@ -34,6 +34,7 @@ WORKDIR /openedx/edx-platform
 # Install python requirements (clone source repos in a separate dir, otherwise
 # they will be overwritten when we mount edx-platform)
 ENV NO_PYTHON_UNINSTALL 1
+ENV NO_PREREQ_INSTALL 1
 RUN pip install pip==20.0.2 \
   && pip install --src ../venv/src -r requirements/edx/base.txt
 
