@@ -14,5 +14,5 @@ pip3 install -e git+https://github.com/edx/edx-ora2.git@2.7.6#egg=ora2==2.7.6
 DJANGO_SETTINGS_MODULE=lms.envs.test EDXAPP_TEST_MONGO_HOST=mongodb pytest lms/djangoapps/instructor_task/tests/test_tasks_helper.py lms/djangoapps/instructor_analytics/tests/test_basic.py
 
 ## Test after installing the package
-#pip3 install -e git+https://github.com/eol-uchile/uchileedxlogin@2db9adab2a3662ae04754cc158af57f2f197c236#egg=uchileedxlogin
-#DJANGO_SETTINGS_MODULE=lms.envs.test EDXAPP_TEST_MONGO_HOST=mongodb pytest lms/djangoapps/instructor_task/tests/test_tasks_helper.py lms/djangoapps/instructor_analytics/tests/test_basic.py
+pip install -e git+https://github.com/eol-uchile/uchileedxlogin@b4c698971ffd3fc86620b0e5d7702b9ec07087ea#egg=uchileedxlogin
+DJANGO_SETTINGS_MODULE=lms.envs.test EDXAPP_TEST_MONGO_HOST=mongodb pytest lms/djangoapps/instructor_task/tests/test_tasks_helper.py lms/djangoapps/instructor_analytics/tests/test_basic.py
