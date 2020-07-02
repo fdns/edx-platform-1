@@ -1543,7 +1543,7 @@ class TestStudentReport(TestReportMixin, InstructorTaskCourseTestCase):
             self.verify_rows_in_csv(
                 [
                     {
-                        u'id': unicode(aux_student.id),
+                        u'id': str(aux_student.id),
                         u'run': '000000001K',
                         u'email': aux_student.email,
                         u'username': aux_student.username,                      
@@ -2081,20 +2081,19 @@ class TestGradeReport(TestReportMixin, InstructorTaskModuleTestCase):
                     self.assertFalse(mock_course_blocks.called)
 
     ################ EOL ###############################################
-    @override_settings(UCHILEEDXLOGIN_TASK_RUN_ENABLE=True)            
+    @override_settings(UCHILEEDXLOGIN_TASK_RUN_ENABLE=True)        
     def test_grade_report_with_run(self):
         try:
             from unittest.case import SkipTest
             from uchileedxlogin.models import EdxLoginUser
         except ImportError:
             self.skipTest("import error uchileedxlogin")
-            
-        self.submit_student_answer(self.student.username, u'Problem1', ['Option 1'])  
 
+        self.submit_student_answer(self.student.username, u'Problem1', ['Option 1'])
         EdxLoginUser.objects.create(user=self.student, run='009472337K')
+
         with patch('lms.djangoapps.instructor_task.tasks_helper.runner._get_current_task'):
             result = CourseGradeReport.generate(None, None, self.course.id, None, 'graded')
-
             self.assertDictContainsSubset(
                 {'action_name': 'graded', 'attempted': 1, 'succeeded': 1, 'failed': 0},
                 result,
@@ -2102,21 +2101,20 @@ class TestGradeReport(TestReportMixin, InstructorTaskModuleTestCase):
             self.verify_rows_in_csv(
                 [
                     {
-                        u'Student ID': unicode(self.student.id),
+                        u'Student ID': text_type(self.student.id),
                         u'Run': '009472337K',
                         u'Email': self.student.email,
                         u'Username': self.student.username,
                         u'Grade': '0.13',
                         u'Homework 1: Subsection': '0.5',
-                        u'Homework 2: Hidden': u'Not Attempted',
-                        u'Homework 3: Unattempted': u'Not Attempted',
-                        u'Homework 4: Empty': u'Not Attempted',
-                        u'Homework (Avg)': '0.125',
+                        u'Homework 2: Unattempted': 'Not Attempted',
+                        u'Homework 3: Empty': 'Not Attempted',
+                        u'Homework (Avg)': text_type(1.0 / 6.0),
                     },
                 ],
                 ignore_other_columns=True,
-            )          
-        
+            )    
+
 @ddt.ddt
 @patch('lms.djangoapps.instructor_task.tasks_helper.misc.DefaultStorage', new=MockDefaultStorage)
 class TestGradeReportEnrollmentAndCertificateInfo(TestReportMixin, InstructorTaskModuleTestCase):
