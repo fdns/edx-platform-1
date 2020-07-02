@@ -14,7 +14,8 @@ jobs:
 
       - name: Build Open edX Testing version
         run: docker build . --file .github/build/Dockerfile --target testing --build-arg EDX_PLATFORM_VERSION=${GITHUB_SHA}  --tag eoluchile/edx-platform:testing-juniper
-
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v2
       - name: Test eol changes
         run: |
           cd .github/test
