@@ -19,4 +19,4 @@ jobs:
         run : make docker_build
 
       - name: Run tests
-        run: docker run -e CIRCLE_NODE_TOTAL=1--rm openedx/edx-platform:latest scripts/circle-ci-tests.sh
+        run: docker run -e NO_PREREQ_INSTALL='true'--rm openedx/edx-platform:latest paver test_lib --cov-args="-p"
