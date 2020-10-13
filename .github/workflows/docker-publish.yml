@@ -19,4 +19,7 @@ jobs:
         env:
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        run : make docker_push
+        run : make docker_build
+
+      - name: Run tests
+        run: docker run -e CIRCLE_NODE_TOTAL=1--rm openedx/edx-platform:latest scripts/circle-ci-tests.sh
