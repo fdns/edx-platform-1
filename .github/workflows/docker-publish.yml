@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cat requirements/system/ubuntu/apt-repos.txt | xargs -i sudo add-apt-repository {}
+          #cat requirements/system/ubuntu/apt-repos.txt | xargs -i sudo add-apt-repository {}
           sudo apt-get update
           sudo apt-get install $(cat requirements/system/ubuntu/apt-packages.txt | tr '\n' ' ')
           npm install
