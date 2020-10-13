@@ -5,7 +5,7 @@ jobs:
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     if: github.event_name == 'push'
 
     steps:
@@ -19,6 +19,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cat requirements/system/ubuntu/apt-repos.txt | xargs -i add-apt-repository {}
+          apt-get install $(cat requirements/system/ubuntu/apt-packages.txt | tr '\n' ' ')
           npm install
           pip install setuptools
           pip install --exists-action w -r requirements/edx/testing.txt
