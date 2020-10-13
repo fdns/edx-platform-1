@@ -4,7 +4,7 @@ gfortran
 libatlas-dev
 libblas-dev
 liblapack-dev
-liblapack3gf
+liblapack3
 curl
 git
 python-virtualenv
