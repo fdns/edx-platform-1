@@ -21,7 +21,7 @@ jobs:
         run: |
           #cat requirements/system/ubuntu/apt-repos.txt | xargs -i sudo add-apt-repository {}
           sudo apt-get update
-          sudo apt-get install $(cat requirements/system/ubuntu/apt-packages.txt | tr '\n' ' ')
+          sudo apt-get install -yq $(cat requirements/system/ubuntu/apt-packages.txt | tr '\n' ' ')
           npm install
           pip install setuptools
           pip install --exists-action w -r requirements/edx/testing.txt
