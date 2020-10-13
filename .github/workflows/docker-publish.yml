@@ -12,6 +12,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+    - name: Set up Python 3.5
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.5
+
+      - name: Install dependencies
+        run: |
+          npm install
+          pip install setuptools
+          pip install --exists-action w -r requirements/edx/testing.txt
+          pip install coveralls==1.0
+          pip freeze
+
+      - name: Start mongodb
+        run: docker run -d -p 27017:27017 mongodb:3.6
+
+      - name: Run tests
+        run: paver test_system -s cms --cov-args="-p"
+
       - name: Build and Push docker image
         env:
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
