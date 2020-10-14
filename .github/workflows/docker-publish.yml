@@ -20,8 +20,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          cat requirements/system/ubuntu/apt-repos.txt | xargs -i sudo add-apt-repository {}
-          sudo apt-get update
+          #cat requirements/system/ubuntu/apt-repos.txt | xargs -i sudo add-apt-repository {}
+          #sudo apt-get update
           sudo apt-get install -yq $(cat requirements/system/ubuntu/apt-packages.txt | tr '\n' ' ')
           npm install
           pip install setuptools
