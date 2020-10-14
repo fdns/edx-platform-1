@@ -21,10 +21,10 @@ jobs:
           rm /usr/bin/pip && ln -s /usr/bin/pip3 /usr/bin/pip
           rm /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python
           npm install
-          pip install setuptools==44.1.0
-          pip install --exists-action w -r requirements/edx/testing.txt
-          pip install coveralls==1.0
-          pip freeze
+          pip3 install setuptools==44.1.0
+          pip3 install --exists-action w -r requirements/edx/testing.txt
+          pip3 install coveralls==1.0
+          pip3 freeze
 
       - name: Start mongodb
         run: docker run -d -p 27017:27017 mongo:3.6
