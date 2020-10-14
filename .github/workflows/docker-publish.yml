@@ -21,7 +21,6 @@ jobs:
           sudo rm /usr/bin/pip && sudo ln -s /usr/bin/pip3 /usr/bin/pip
           sudo rm /usr/bin/python && sudo ln -s /usr/bin/python3 /usr/bin/python
           pip install pip==20.0.2
-          pip install setuptools==44.1.0
           pip install --exists-action w -r requirements/edx/testing.txt
           pip install coveralls==1.0
           pip freeze
