@@ -30,7 +30,7 @@ jobs:
           pip freeze
 
       - name: Start mongodb
-        run: docker run -d -p 27017:27017 mongodb:3.6
+        run: docker run -d -p 27017:27017 mongo:3.6
 
       - name: Run tests
         run: paver test_system -s cms --cov-args="-p"
