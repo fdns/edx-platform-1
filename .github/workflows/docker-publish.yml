@@ -13,15 +13,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install dependencies
-        env:
-          SETUPTOOLS_USE_DISTUTILS: "stdlib"
         run: |
           sudo apt-get update
           #cat requirements/system/ubuntu/apt-repos.txt | xargs -i sudo add-apt-repository {}
           #sudo apt-get update
           sudo apt-get install -yq $(cat requirements/system/ubuntu/apt-packages.txt | tr '\n' ' ')
           npm install
-          pip install setuptools
+          pip install setuptools==44.1.0
           pip install --exists-action w -r requirements/edx/testing.txt
           pip install coveralls==1.0
           pip freeze
