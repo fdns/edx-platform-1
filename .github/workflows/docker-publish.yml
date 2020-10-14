@@ -18,13 +18,13 @@ jobs:
           #cat requirements/system/ubuntu/apt-repos.txt | xargs -i sudo add-apt-repository {}
           #sudo apt-get update
           sudo apt-get install -yq $(cat requirements/system/ubuntu/apt-packages.txt | tr '\n' ' ')
-          rm /usr/bin/pip && ln -s /usr/bin/pip3 /usr/bin/pip
-          rm /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python
+          sudo rm /usr/bin/pip && sudo ln -s /usr/bin/pip3 /usr/bin/pip
+          sudo rm /usr/bin/python && sudo ln -s /usr/bin/python3 /usr/bin/python
           npm install
-          pip3 install setuptools==44.1.0
-          pip3 install --exists-action w -r requirements/edx/testing.txt
-          pip3 install coveralls==1.0
-          pip3 freeze
+          pip install setuptools==44.1.0
+          pip install --exists-action w -r requirements/edx/testing.txt
+          pip install coveralls==1.0
+          pip freeze
 
       - name: Start mongodb
         run: docker run -d -p 27017:27017 mongo:3.6
